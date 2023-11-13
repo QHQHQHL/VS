@@ -1,0 +1,46 @@
+def S_or_W():
+    LIST = pd.read_csv("D:/newcode/2022-09-07.csv")
+    LIST = LIST.values.tolist()
+    track = LIST[0][6]
+    day = LIST[0][8]
+    beam = LIST[0][7][-2]
+    r = []
+    l = []
+    for i in range(len(LIST)):
+        if LIST[i][6] == track and LIST[i][8] == day and LIST[i][7][-2] == beam:
+            if LIST[i][7][-1] == "r":
+                r.append(float(LIST[i][4]))
+            else:
+                l.append(float(LIST[i][4]))
+                
+            if i == len(LIST) - 1:
+                if len(r) > len(l):
+                    for j in range(len(LIST)):
+                        if LIST[j][6] == track and LIST[j][8] == day and LIST[j][7][-2] == beam:
+                            LIST[j][5] = 'r'
+                else:
+                    for j in range(len(LIST)):
+                        if LIST[j][6] == track and LIST[j][8] == day and LIST[j][7][-2] == beam:
+                            LIST[j][5] = 'l'
+        else:
+            if len(r) > len(l):
+                for j in range(len(LIST)):
+                    if LIST[j][6] == track and LIST[j][8] == day and LIST[j][7][-2] == beam:
+                        LIST[j][5] = 'r'
+            else:
+                for j in range(len(LIST)):
+                    if LIST[j][6] == track and LIST[j][8] == day and LIST[j][7][-2] == beam:
+                        LIST[j][5] = 'l'
+            track = LIST[i][6]
+            day = LIST[i][8]
+            beam = LIST[i][7][-2]
+            r = []
+            l = []
+            if LIST[i][7][-1] == "r":
+                r.append(float(LIST[i][4]))
+            else:
+                l.append(float(LIST[i][4]))
+    
+    test = pd.DataFrame(data = LIST)
+    test.to_csv("D:/newcode/0907_p1.csv")
+    #return LIST
