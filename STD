@@ -1,0 +1,299 @@
+def STD(list):
+    df = pd.DataFrame(list)
+    std = np.std(df[0])
+    return np.mean(df[0]), std
+def IceSAT2_STD():
+    LIST = pd.read_csv("")
+    outputpath = ""
+    LIST = LIST.values.tolist()
+    callist = [[float(LIST[0][4]), 0]]
+    segmentlist = [float(LIST[0][0])]
+    Nc = 1
+    if float(LIST[0][6]) < 10:
+        Tra_n = "000" + str(LIST[0][6])
+    if float(LIST[0][6]) >= 10 and float(LIST[0][6]) < 100:
+        Tra_n = "00" + str(LIST[0][6])
+    if float(LIST[0][6]) >= 100 and float(LIST[0][6]) < 1000:
+        Tra_n = "0" + str(LIST[0][6])
+    if float(LIST[0][6]) >= 1000:
+        Tra_n = str(LIST[0][6])
+    LIST[0][9] = "S" + "_" + Tra_n + "_" + str(LIST[0][7][2:4]) + "_" + str(LIST[0][8][16:28]) + "_VS0" + str(Nc)
+    
+    for i in range(1, len(LIST)-1, 1):
+        if LIST[i][7] == LIST[i-1][7]:
+            if LIST[i][7][-1] == LIST[i][5]:
+                
+                if (float(LIST[i][0])-float(LIST[i-1][0])) <= 1:
+                    callist.append([float(LIST[i][4]), i])
+                    segmentlist.append(float(LIST[i][0]))
+                    
+                    if Nc < 10:
+                        Nc1 = str(0) + str(Nc)
+                    if Nc >= 10:
+                        Nc1 = str(Nc)
+                    if float(LIST[i][6]) < 10:
+                        Tra_n = "000" + str(LIST[i][6])
+                    if float(LIST[i][6]) >= 10 and float(LIST[i][6]) < 100:
+                        Tra_n = "00" + str(LIST[i][6])
+                    if float(LIST[i][6]) >= 100 and float(LIST[i][6]) < 1000:
+                        Tra_n = "0" + str(LIST[i][6])
+                    if float(LIST[i][6]) >= 1000:
+                        Tra_n = str(LIST[i][6])
+                        
+                        
+                    LIST[i][9] = "S" + "_" + Tra_n + "_" + str(LIST[i][7][2:4]) + "_" + str(LIST[i][8][16:28]) + "_VS" + Nc1
+                
+                else:
+                    
+                    #print(segmentlist)
+                    if len(callist) >= 2:
+                        
+                        md_r, nmad_r = STD(callist)
+                        for j in range(len(callist)):
+                            if callist[j][0] >= md_r - nmad_r and callist[j][0] <= md_r + nmad_r:
+                                LIST[callist[j][1]][10] = 1
+                        
+                        callist_l = []
+                        segment_l = []
+                        for m in range(len(LIST)):
+                            if LIST[m][7][-1] != LIST[i][5] and LIST[m][6] == LIST[i][6] and LIST[m][8] == LIST[i][8] and LIST[m][7][2] == LIST[i][7][-2]:
+                                if LIST[m][0] in segmentlist:
+                                    callist_l.append([float(LIST[m][4]), m])
+                                    segment_l.append(float(LIST[m][0]))
+                                    
+                                    if Nc < 10:
+                                        Nc1 = str(0) + str(Nc)
+                                    if Nc >= 10:
+                                        Nc1 = str(Nc)
+                                    if float(LIST[m][6]) < 10:
+                                        Tra_n = "000" + str(LIST[m][6])
+                                    if float(LIST[m][6]) >= 10 and float(LIST[m][6]) < 100:
+                                        Tra_n = "00" + str(LIST[m][6])
+                                    if float(LIST[m][6]) >= 100 and float(LIST[m][6]) < 1000:
+                                        Tra_n = "0" + str(LIST[m][6])
+                                    if float(LIST[m][6]) >= 1000:
+                                        Tra_n = str(LIST[m][6])
+                                        
+                                    LIST[m][9] = "W" + "_" + Tra_n + "_" + str(LIST[m][7][2:4]) + "_" + str(LIST[m][8][16:28]) + "_VS" + Nc1
+                        
+                        #print(segment_l)
+                        if len(segment_l) != 0:
+                    
+                            mins = min(segment_l)
+                            maxs = max(segment_l)
+                        
+                        else:
+                            mins = -100000.0
+                            maxs = 9999999999.0
+                        
+                        n = 0
+                        while n >= 0:
+                            
+                            newmins = []
+                            newmaxs = []
+                            #print(mins, maxs)
+                            for n1 in range(len(LIST)):
+                                if LIST[n1][7][-1] != LIST[i][5] and LIST[n1][6] == LIST[i][6] and LIST[n1][8] == LIST[i][8] and LIST[n1][7][2] == LIST[i][7][-2]:
+                            
+                                    if mins - float(LIST[n1][0]) <= 2 and mins - float(LIST[n1][0]) > 0:
+                                        callist_l.append([float(LIST[n1][4]), n1])
+                                        newmins.append(float(LIST[n1][0]))
+                                        
+                                        if Nc < 10:
+                                            Nc1 = str(0) + str(Nc)
+                                        if Nc >= 10:
+                                            Nc1 = str(Nc)
+                                        if float(LIST[n1][6]) < 10:
+                                            Tra_n = "000" + str(LIST[n1][6])
+                                        if float(LIST[n1][6]) >= 10 and float(LIST[n1][6]) < 100:
+                                            Tra_n = "00" + str(LIST[n1][6])
+                                        if float(LIST[n1][6]) >= 100 and float(LIST[n1][6]) < 1000:
+                                            Tra_n = "0" + str(LIST[n1][6])
+                                        if float(LIST[n1][6]) >= 1000:
+                                            Tra_n = str(LIST[n1][6])  
+                                            
+                                        LIST[n1][9] = "W" + "_" + Tra_n + "_" + str(LIST[n1][7][2:4]) + "_" + str(LIST[n1][8][16:28]) + "_VS" + Nc1               
+                                    
+                                    if float(LIST[n1][0]) - maxs <= 2 and float(LIST[n1][0]) - maxs > 0:
+                                        callist_l.append([float(LIST[n1][4]), n1])
+                                        newmaxs.append(float(LIST[n1][0]))
+                                        
+                                        if Nc < 10:
+                                            Nc1 = str(0) + str(Nc)
+                                        if Nc >= 10:
+                                            Nc1 = str(Nc)
+                                        if float(LIST[n1][6]) < 10:
+                                            Tra_n = "000" + str(LIST[n1][6])
+                                        if float(LIST[n1][6]) >= 10 and float(LIST[n1][6]) < 100:
+                                            Tra_n = "00" + str(LIST[n1][6])
+                                        if float(LIST[n1][6]) >= 100 and float(LIST[n1][6]) < 1000:
+                                            Tra_n = "0" + str(LIST[n1][6])
+                                        if float(LIST[n1][6]) >= 1000:
+                                            Tra_n = str(LIST[n1][6])  
+                                        
+                                        LIST[n1][9] = "W" + "_" + Tra_n + "_" + str(LIST[n1][7][2:4]) + "_" + str(LIST[n1][8][16:28]) + "_VS" + Nc1
+                            #print(newmaxs, newmins)
+                            if len(newmaxs) != 0:
+                                maxs = max(newmaxs)
+                            if len(newmins) != 0:
+                                mins = min(newmins)
+                            if len(newmaxs) == 0 and len(newmins) == 0:
+                                #print('done')
+                                break;
+                            
+                            n = n + 1        
+                        
+                        #print(n)
+                        #print(callist_l)
+                        if len(callist_l) >= 2:
+                            md_l, nmad_l = STD(callist_l)
+                            for p in range(len(callist_l)):
+                                if callist_l[p][0] >= md_l - nmad_l and callist_l[p][0] <= md_l + nmad_l:
+                                    LIST[callist_l[p][1]][10] = 1
+                    
+                    callist = [[float(LIST[i][4]), i]]
+                    segmentlist = [LIST[i][0]]
+                    Nc = Nc + 1
+                    
+                    if Nc < 10:
+                        Nc1 = str(0) + str(Nc)
+                    if Nc >= 10:
+                        Nc1 = str(Nc)
+                    if float(LIST[i][6]) < 10:
+                        Tra_n = "000" + str(LIST[i][6])
+                    if float(LIST[i][6]) >= 10 and float(LIST[i][6]) < 100:
+                        Tra_n = "00" + str(LIST[i][6])
+                    if float(LIST[i][6]) >= 100 and float(LIST[i][6]) < 1000:
+                        Tra_n = "0" + str(LIST[i][6])
+                    if float(LIST[i][6]) >= 1000:
+                        Tra_n = str(LIST[i][6]) 
+                    
+                    LIST[i][9] = "S" + "_" + Tra_n + "_" + str(LIST[i][7][2:4]) + "_" + str(LIST[i][8][16:28]) + "_VS" + Nc1
+                    #print(Nc)
+            
+        else:
+            #print("done")
+            #print(segmentlist)
+            if len(callist) >= 2:
+                
+                md_r, nmad_r = STD(callist)
+                for j in range(len(callist)):
+                    if callist[j][0] >= md_r - nmad_r and callist[j][0] <= md_r + nmad_r:
+                        LIST[callist[j][1]][10] = 1
+                
+                callist_l = []
+                segment_l = []
+                for m in range(len(LIST)):
+                    if LIST[m][7][-1] != LIST[i-1][5] and LIST[m][6] == LIST[i-1][6] and LIST[m][8] == LIST[i-1][8] and LIST[m][7][2] == LIST[i-1][7][-2]:
+                        if LIST[m][0] in segmentlist:
+                            callist_l.append([float(LIST[m][4]), m])
+                            segment_l.append(float(LIST[m][0]))
+                            
+                            if Nc < 10:
+                                Nc1 = str(0) + str(Nc)
+                            if Nc >= 10:
+                                Nc1 = str(Nc)
+                            if float(LIST[m][6]) < 10:
+                                Tra_n = "000" + str(LIST[m][6])
+                            if float(LIST[m][6]) >= 10 and float(LIST[m][6]) < 100:
+                                Tra_n = "00" + str(LIST[m][6])
+                            if float(LIST[m][6]) >= 100 and float(LIST[m][6]) < 1000:
+                                Tra_n = "0" + str(LIST[m][6])
+                            if float(LIST[m][6]) >= 1000:
+                                Tra_n = str(LIST[m][6])
+                                
+                            LIST[m][9] = "W" + "_" + Tra_n + "_" + str(LIST[m][7][2:4]) + "_" + str(LIST[m][8][16:28]) + "_VS" + Nc1
+                 
+                #print(segment_l)
+                if len(segment_l) != 0:
+            
+                    mins = min(segment_l)
+                    maxs = max(segment_l)
+                
+                else:
+                    mins = -100000.0
+                    maxs = 9999999999.0
+                
+                n = 0
+                while n >= 0:
+                    
+                    newmins = []
+                    newmaxs = []
+                    
+                    for n1 in range(len(LIST)):
+                        if LIST[n1][7][-1] != LIST[i-1][5] and LIST[n1][6] == LIST[i-1][6] and LIST[n1][8] == LIST[i-1][8] and LIST[n1][7][2] == LIST[i-1][7][-2]:
+                    
+                            if mins - float(LIST[n1][0]) <= 2 and mins - float(LIST[n1][0]) > 0:
+                                callist_l.append([float(LIST[n1][4]), n1])
+                                newmins.append(float(LIST[n1][0]))
+                                
+                                if Nc < 10:
+                                    Nc1 = str(0) + str(Nc)
+                                if Nc >= 10:
+                                    Nc1 = str(Nc)
+                                if float(LIST[n1][6]) < 10:
+                                    Tra_n = "000" + str(LIST[n1][6])
+                                if float(LIST[n1][6]) >= 10 and float(LIST[n1][6]) < 100:
+                                    Tra_n = "00" + str(LIST[n1][6])
+                                if float(LIST[n1][6]) >= 100 and float(LIST[n1][6]) < 1000:
+                                    Tra_n = "0" + str(LIST[n1][6])
+                                if float(LIST[n1][6]) >= 1000:
+                                    Tra_n = str(LIST[n1][6]) 
+                                    
+                                LIST[n1][9] = "W" + "_" + Tra_n + "_" + str(LIST[n1][7][2:4]) + "_" + str(LIST[n1][8][16:28]) + "_VS" + Nc1
+                                                   
+                            
+                            if float(LIST[n1][0]) - maxs <= 2 and float(LIST[n1][0]) - maxs > 0:
+                                callist_l.append([float(LIST[n1][4]), n1])
+                                newmaxs.append(float(LIST[n1][0]))
+                                
+                                if Nc < 10:
+                                    Nc1 = str(0) + str(Nc)
+                                if Nc >= 10:
+                                    Nc1 = str(Nc)
+                                if float(LIST[n1][6]) < 10:
+                                    Tra_n = "000" + str(LIST[n1][6])
+                                if float(LIST[n1][6]) >= 10 and float(LIST[n1][6]) < 100:
+                                    Tra_n = "00" + str(LIST[n1][6])
+                                if float(LIST[n1][6]) >= 100 and float(LIST[n1][6]) < 1000:
+                                    Tra_n = "0" + str(LIST[n1][6])
+                                if float(LIST[n1][6]) >= 1000:
+                                    Tra_n = str(LIST[n1][6]) 
+                                    
+                                LIST[n1][9] = "W" + "_" + Tra_n + "_" + str(LIST[n1][7][2:4]) + "_" + str(LIST[n1][8][16:28]) + "_VS" + Nc1
+                    #print(newmaxs, newmins)
+                    if len(newmaxs) != 0:
+                        maxs = max(newmaxs)
+                    if len(newmins) != 0:
+                        mins = min(newmins)
+                    if len(newmaxs) == 0 and len(newmins) == 0:
+                        #print('done')
+                        break;
+                    
+                    n = n + 1        
+                #print(n)
+                #print(callist_l)
+                if len(callist_l) >= 2:
+                    md_l, nmad_l = STD(callist_l)
+                    for p in range(len(callist_l)):
+                        if callist_l[p][0] >= md_l - nmad_l and callist_l[p][0] <= md_l + nmad_l:
+                            LIST[callist_l[p][1]][10] = 1
+            
+            callist = [[float(LIST[i][4]), i]]
+            segmentlist = [LIST[i][0]]
+            if LIST[i][7][-1] == LIST[i][5]:
+                Nc = 1
+                if float(LIST[i][6]) < 10:
+                    Tra_n = "000" + str(LIST[i][6])
+                if float(LIST[i][6]) >= 10 and float(LIST[i][6]) < 100:
+                    Tra_n = "00" + str(LIST[i][6])
+                if float(LIST[i][6]) >= 100 and float(LIST[i][6]) < 1000:
+                    Tra_n = "0" + str(LIST[i][6])
+                if float(LIST[i][6]) >= 1000:
+                    Tra_n = str(LIST[i][6])
+                LIST[i][9] = "S" + "_" + Tra_n + "_" + str(LIST[i][7][2:4]) + "_" + str(LIST[i][8][16:28]) + "_VS0" + str(Nc)
+    LIST1 = filter(lambda x:x[10] == 1, LIST)
+            
+    
+    test = pd.DataFrame(data = LIST1)
+    test.to_csv(outputpath + "")
