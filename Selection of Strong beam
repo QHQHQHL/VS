@@ -1,5 +1,5 @@
 def S_or_W():
-    LIST = pd.read_csv("D:/newcode/2022-09-07.csv")
+    LIST = pd.read_csv("")
     LIST = LIST.values.tolist()
     track = LIST[0][6]
     day = LIST[0][8]
@@ -42,5 +42,5 @@ def S_or_W():
                 l.append(float(LIST[i][4]))
     
     test = pd.DataFrame(data = LIST)
-    test.to_csv("D:/newcode/0907_p1.csv")
+    test.to_csv("")
     #return LIST
